@@ -38,14 +38,30 @@ class DoctorsController < ApplicationController
     @doctor.destroy
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_doctor
-      @doctor = Doctor.find(params[:id])
+  def update_info
+    @doctor = Doctor.where(user_id: params[:user_id])
+    if @doctor
+      update
+    else
+      create
     end
+  end
 
-    # Only allow a trusted parameter "white list" through.
-    def doctor_params
-      params.require(:doctor).permit(:full_name, :department)
-    end
+  def get_info
+    doctor = Doctor.find_by(user_id: params[:user_id])
+    render json: doctor
+  end
+
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_doctor
+    @doctor = Doctor.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def doctor_params
+    params.require(:doctor).permit(:full_name, :department, :user_id)
+  end
+
 end
