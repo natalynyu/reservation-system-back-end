@@ -1,13 +1,13 @@
-class ReservationsController < ApplicationController
+class ReservationsController < ProtectedController
   before_action :set_reservation, only: [:show, :update, :destroy]
 
   # GET /reservations
   def index
     # find doctor record from @current_user
     # find reservation records where doctor_id is equal to current doctor id
-    doctor = Doctor.find_by(user_id: @current_user.id).first
+    doctor = Doctor.find_by(user_id: @current_user.id)
 
-    @reservations = Reservation.find_by(doctor_id: doctor.id)
+    @reservations = Reservation.where(doctor_id: doctor.id)
 
     render json: @reservations
   end

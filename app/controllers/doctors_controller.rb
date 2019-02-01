@@ -1,4 +1,4 @@
-class DoctorsController < ApplicationController
+class DoctorsController < ProtectedController
   before_action :set_doctor, only: [:show, :update, :destroy]
 
   # GET /doctors
