@@ -3,7 +3,11 @@ class ReservationsController < ApplicationController
 
   # GET /reservations
   def index
-    @reservations = Reservation.all
+    # find doctor record from @current_user
+    # find reservation records where doctor_id is equal to current doctor id
+    doctor = Doctor.find_by(user_id: @current_user.id).first
+
+    @reservations = Reservation.find_by(doctor_id: doctor.id)
 
     render json: @reservations
   end
@@ -45,7 +49,8 @@ class ReservationsController < ApplicationController
     end
 
     # Only allow a trusted parameter "white list" through.
+    # {reservation: {start_time: , end}}
     def reservation_params
-      params.require(:reservation).permit(:start_time, :end_time, :machine)
+      params.require(:reservation).permit(:start_time, :end_time, :machine, :doctor_id)
     end
 end
