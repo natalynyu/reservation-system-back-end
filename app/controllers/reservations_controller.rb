@@ -25,7 +25,9 @@ class ReservationsController < ProtectedController
     end_time = rp[:end_time]
     # NOTE: (some expression) OR (some other expression)
     # like (machine = ? and start_time = ?) or (machine = ? and start_time < ?)
-    reservations = Reservation.where('machine = ? and start_time = ? and end_time = ?', machine, start_time, end_time)
+    reservations = Reservation.where('machine = :machine and
+      :end_time > start_time and :start_time < end_time',
+      {machine: machine, start_time: start_time, end_time: end_time})
     if reservations.any?
       render json: { reservation: 'already exists' }, status: :unprocessable_entity
       return
