@@ -19,6 +19,17 @@ class ReservationsController < ProtectedController
 
   # POST /reservations
   def create
+    rp = reservation_params
+    machine = rp[:machine]
+    start_time = rp[:start_time]
+    end_time = rp[:end_time]
+    # NOTE: (some expression) OR (some other expression)
+    # like (machine = ? and start_time = ?) or (machine = ? and start_time < ?)
+    reservations = Reservation.where('machine = ? and start_time = ? and end_time = ?', machine, start_time, end_time)
+    if reservations.any?
+      render json: { reservation: 'already exists' }, status: :unprocessable_entity
+      return
+    end
     @reservation = Reservation.new(reservation_params)
 
     if @reservation.save
@@ -46,6 +57,7 @@ class ReservationsController < ProtectedController
     # Use callbacks to share common setup or constraints between actions.
     def set_reservation
       @reservation = Reservation.find(params[:id])
+      # @reservation = Reservation.find_by(id: params[:id], doctor_id: @current_user.id)
     end
 
     # Only allow a trusted parameter "white list" through.
