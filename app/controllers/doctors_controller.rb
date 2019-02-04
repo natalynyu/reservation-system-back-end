@@ -39,7 +39,7 @@ class DoctorsController < ProtectedController
   end
 
   def update_info
-    @doctor = Doctor.where(user_id: doctor_params[:user_id])
+    @doctor = Doctor.find_by(user_id: doctor_params[:user_id])
     if @doctor
       update
     else
