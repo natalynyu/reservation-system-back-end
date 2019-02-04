@@ -49,7 +49,11 @@ class DoctorsController < ProtectedController
 
   def get_info
     doctor = Doctor.find_by(user_id: params[:user_id])
-    render json: doctor
+    if doctor.nil?
+      render nothing: true, status: 204
+    else
+      render json: doctor
+    end
   end
 
   private
