@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class DoctorsController < ProtectedController
-  before_action :set_doctor, only: [:show, :update, :destroy]
+  before_action :set_doctor, only: %i[show update destroy]
 
   # GET /doctors
   def index
@@ -15,7 +17,9 @@ class DoctorsController < ProtectedController
 
   # POST /doctors
   def create
-    @doctor = Doctor.new(doctor_params)
+    p = doctor_params
+    p[:user_id] = @current_user.id
+    @doctor = Doctor.new(p)
 
     if @doctor.save
       render json: @doctor, status: :created, location: @doctor
@@ -26,7 +30,9 @@ class DoctorsController < ProtectedController
 
   # PATCH/PUT /doctors/1
   def update
-    if @doctor.update(doctor_params)
+    p = doctor_params
+    p[:user_id] = @current_user.id
+    if @doctor.update(p)
       render json: @doctor
     else
       render json: @doctor.errors, status: :unprocessable_entity
@@ -39,7 +45,7 @@ class DoctorsController < ProtectedController
   end
 
   def update_info
-    @doctor = Doctor.find_by(user_id: doctor_params[:user_id])
+    @doctor = Doctor.find_by(user_id: @current_user.id)
     if @doctor
       update
     else
@@ -48,7 +54,7 @@ class DoctorsController < ProtectedController
   end
 
   def get_info
-    doctor = Doctor.find_by(user_id: params[:user_id])
+    doctor = Doctor.find_by(user_id: @current_user.id)
     if doctor.nil?
       render nothing: true, status: 204
     else
@@ -60,12 +66,11 @@ class DoctorsController < ProtectedController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_doctor
-    @doctor = Doctor.find(params[:id])
+    @doctor = @current_user.doctors.find(params[:id])
   end
 
   # Only allow a trusted parameter "white list" through.
   def doctor_params
-    params.require(:doctor).permit(:full_name, :department, :user_id)
+    params.require(:doctor).permit(:full_name, :department)
   end
-
 end
