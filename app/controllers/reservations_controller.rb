@@ -50,6 +50,10 @@ class ReservationsController < ProtectedController
 
   # PATCH/PUT /reservations/1
   def update
+    if @reservation.nil?
+      render json: { reservation: 'does not exist' }, status: :unprocessable_entity
+      return
+    end
     rp = reservation_params
     if @reservation.update(reservation_params)
       render json: @reservation
@@ -60,6 +64,10 @@ class ReservationsController < ProtectedController
 
   # DELETE /reservations/1
   def destroy
+    if @reservation.nil?
+      render json: { reservation: 'does not exist' }, status: :not_found
+      return
+    end
     @reservation.destroy
   end
 
@@ -74,7 +82,6 @@ class ReservationsController < ProtectedController
     return if @doctor.nil?
 
     @reservation = @doctor.reservations.find(params[:id])
-    # @reservation = @current_user.doctorsReservation.find(params[:id])
   end
 
   # Only allow a trusted parameter "white list" through.
